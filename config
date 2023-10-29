@@ -3,6 +3,8 @@
 set-option -g renumber-windows on
 # Set scrollback buffer to 10000
 set -g history-limit 10000
+# enable mouse support
+set -g mouse on
 # refresh enviroment variables
 set-option -g update-environment "SSH_ASKPASS SSH_AUTH_SOCK SSH_AGENT_PID SSH_CONNECTION WINDOWID XAUTHORITY DISPLAY"
 # run some custom commands at startup
@@ -18,6 +20,18 @@ bind-key C-a send-prefix
 set -g status-keys vi # this doesn't seem to work
 set-window-option -g status-keys vi
 set-window-option -g mode-keys vi
+
+# === Copy mode and clipboard ===
+# Double and triple mouse click
+# NOTE: For X Windows only. For a different window system replace `xsel`,
+# see https://github.com/tmux/tmux/wiki/Clipboard#available-tools
+bind -T copy-mode    DoubleClick1Pane select-pane \; send -X select-word \; send -X copy-pipe-no-clear "xsel -i"
+bind -T copy-mode-vi DoubleClick1Pane select-pane \; send -X select-word \; send -X copy-pipe-no-clear "xsel -i"
+bind -n DoubleClick1Pane select-pane \; copy-mode -M \; send -X select-word \; send -X copy-pipe-no-clear "xsel -i"
+bind -T copy-mode    TripleClick1Pane select-pane \; send -X select-line \; send -X copy-pipe-no-clear "xsel -i"
+bind -T copy-mode-vi TripleClick1Pane select-pane \; send -X select-line \; send -X copy-pipe-no-clear "xsel -i"
+bind -n TripleClick1Pane select-pane \; copy-mode -M \; send -X select-line \; send -X copy-pipe-no-clear "xsel -i"
+bind -n MouseDown2Pane run "tmux set-buffer -b primary_selection \"$(xsel -o)\"; tmux paste-buffer -b primary_selection; tmux delete-buffer -b primary_selection"
 
 # === Appearance ===
 # Improve colours
@@ -42,6 +56,11 @@ set -g @plugin 'tmux-plugins/tmux-copycat'   # regex search
 set -g @plugin 'tmux-plugins/tmux-open'      # open highlighted text
 set -g @plugin 'tmux-plugins/tmux-resurrect' # save session+env, restore after power-up
 set -g @plugin 'tmux-plugins/tmux-continuum' # continuously save, automatically restore. requires resurrect
+# improve copy mode
+set -g @plugin 'tmux-plugins/tmux-yank'
+set -g @yank_action 'copy-pipe-no-clear'
+bind -T copy-mode    C-c send -X copy-pipe-no-clear "xsel -i --clipboard"
+bind -T copy-mode-vi C-c send -X copy-pipe-no-clear "xsel -i --clipboard"
 
 # tpm: keep this line at the very bottom of tmux.conf
 #   install: git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
