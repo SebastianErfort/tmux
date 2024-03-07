@@ -23,3 +23,6 @@
 [submodule "plugins/tpm"]
 	path = plugins/tpm
 	url = https://github.com/tmux-plugins/tpm
+[submodule "plugins/tmux"]
+	path = plugins/tmux
+	url = https://git::@github.com/catppuccin/tmux

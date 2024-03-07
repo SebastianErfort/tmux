@@ -3,40 +3,51 @@
 set-option -g renumber-windows on
 # Set scrollback buffer to 10000
 set -g history-limit 10000
-# enable mouse support
-set -g mouse on
 # refresh enviroment variables
 set-option -g update-environment "SSH_ASKPASS SSH_AUTH_SOCK SSH_AGENT_PID SSH_CONNECTION WINDOWID XAUTHORITY DISPLAY"
 # run some custom commands at startup
-# 1. ensure env. is set up
-new-window ~/.tmux/startup.sh
+# - ensure env. is set up
+new-window '~/.tmux/startup.sh'
 
 # === Controls ===
+# enable mouse support
+set -g mouse on
 # remap prefix from 'C-b' to 'C-a'
 unbind C-b
-set-option -g prefix C-a
-bind-key C-a send-prefix
+set-option -g prefix C-Space
+bind-key C-Space send-prefix
 ## VI key bindings
 set -g status-keys vi # this doesn't seem to work
 set-window-option -g status-keys vi
 set-window-option -g mode-keys vi
+# Open new panes in current directory
+bind '"' split-window -v -c "#{pane_current_path}"
+bind % split-window -h -c "#{pane_current_path}"
 
 # === Copy mode and clipboard ===
+set -g @yank_action 'copy-pipe-no-clear'
+bind -T copy-mode    C-c send -X copy-pipe-no-clear "xsel -i --clipboard"
+bind -T copy-mode-vi C-c send -X copy-pipe-no-clear "xsel -i --clipboard"
+bind-key -T copy-mode-vi v send-keys -X begin-selection
+bind-key -T copy-mode-vi C-v send-keys -X rectangle-toggle
+bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+
 # Double and triple mouse click
 # NOTE: For X Windows only. For a different window system replace `xsel`,
 # see https://github.com/tmux/tmux/wiki/Clipboard#available-tools
-bind -T copy-mode    DoubleClick1Pane select-pane \; send -X select-word \; send -X copy-pipe-no-clear "xsel -i"
-bind -T copy-mode-vi DoubleClick1Pane select-pane \; send -X select-word \; send -X copy-pipe-no-clear "xsel -i"
-bind -n DoubleClick1Pane select-pane \; copy-mode -M \; send -X select-word \; send -X copy-pipe-no-clear "xsel -i"
-bind -T copy-mode    TripleClick1Pane select-pane \; send -X select-line \; send -X copy-pipe-no-clear "xsel -i"
-bind -T copy-mode-vi TripleClick1Pane select-pane \; send -X select-line \; send -X copy-pipe-no-clear "xsel -i"
-bind -n TripleClick1Pane select-pane \; copy-mode -M \; send -X select-line \; send -X copy-pipe-no-clear "xsel -i"
-bind -n MouseDown2Pane run "tmux set-buffer -b primary_selection \"$(xsel -o)\"; tmux paste-buffer -b primary_selection; tmux delete-buffer -b primary_selection"
+# bind -T copy-mode    DoubleClick1Pane select-pane \; send -X select-word \; send -X copy-pipe-no-clear "xsel -i"
+# bind -T copy-mode-vi DoubleClick1Pane select-pane \; send -X select-word \; send -X copy-pipe-no-clear "xsel -i"
+# bind -n DoubleClick1Pane select-pane \; copy-mode -M \; send -X select-word \; send -X copy-pipe-no-clear "xsel -i"
+# bind -T copy-mode    TripleClick1Pane select-pane \; send -X select-line \; send -X copy-pipe-no-clear "xsel -i"
+# bind -T copy-mode-vi TripleClick1Pane select-pane \; send -X select-line \; send -X copy-pipe-no-clear "xsel -i"
+# bind -n TripleClick1Pane select-pane \; copy-mode -M \; send -X select-line \; send -X copy-pipe-no-clear "xsel -i"
+# bind -n MouseDown2Pane run "tmux set-buffer -b primary_selection \"$(xsel -o)\"; tmux paste-buffer -b primary_selection; tmux delete-buffer -b primary_selection"
 
 # === Appearance ===
-# Improve colours
-# xterm breaks home end end keys
+# xterm breaks home and end keys
 set -g default-terminal 'screen-256color'
+# fix 256 colors
+set-option -sa terminal-overrides ",screen*:Tc"
 # Customize the status line - obsolete with tmux-power
 # set -g status-fg  green
 # set -g status-bg  black
@@ -47,20 +58,19 @@ set -g @continuum-restore 'on'
 set -g @continuum-boot 'on'
 # tmux-power
 set -g @tmux_power_show_web_reachable true
+# tmux Catppuccin theme
+set -g @catppuccin_host "on"
+set -g @catppuccin_user "on"
 
 # Tmux plugin manager (tpm): load plugins
 set -g @plugin 'tmux-plugins/tpm'            # plugin manager. required!
 set -g @plugin 'tmux-plugins/tmux-sensible'  # common options
-set -g @plugin 'wfxr/tmux-power'             # powerline theme
-set -g @plugin 'tmux-plugins/tmux-copycat'   # regex search
 set -g @plugin 'tmux-plugins/tmux-open'      # open highlighted text
 set -g @plugin 'tmux-plugins/tmux-resurrect' # save session+env, restore after power-up
 set -g @plugin 'tmux-plugins/tmux-continuum' # continuously save, automatically restore. requires resurrect
-# improve copy mode
-set -g @plugin 'tmux-plugins/tmux-yank'
-set -g @yank_action 'copy-pipe-no-clear'
-bind -T copy-mode    C-c send -X copy-pipe-no-clear "xsel -i --clipboard"
-bind -T copy-mode-vi C-c send -X copy-pipe-no-clear "xsel -i --clipboard"
+set -g @plugin 'tmux-plugins/tmux-yank'      # improve copy mode
+set -g @plugin 'catppuccin/tmux'             # Catpuccin color theme
+# set -g @plugin 'wfxr/tmux-power'             # powerline theme
 
 # tpm: keep this line at the very bottom of tmux.conf
 #   install: git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
