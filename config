@@ -4,7 +4,7 @@ set-option -g renumber-windows on
 # Set scrollback buffer to 10000
 set -g history-limit 10000
 # refresh enviroment variables
-set-option -g update-environment "SSH_ASKPASS SSH_AUTH_SOCK SSH_AGENT_PID SSH_CONNECTION WINDOWID XAUTHORITY DISPLAY"
+set-option -g update-environment "SSH_ASKPASS SSH_AUTH_SOCK SSH_AGENT_PID SSH_CONNECTION WINDOWID XAUTHORITY DISPLAY TERM"
 # run some custom commands at startup
 # - ensure env. is set up
 new-window '~/.tmux/startup.sh'
@@ -35,22 +35,21 @@ bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
 # Double and triple mouse click
 # NOTE: For X Windows only. For a different window system replace `xsel`,
 # see https://github.com/tmux/tmux/wiki/Clipboard#available-tools
-# bind -T copy-mode    DoubleClick1Pane select-pane \; send -X select-word \; send -X copy-pipe-no-clear "xsel -i"
-# bind -T copy-mode-vi DoubleClick1Pane select-pane \; send -X select-word \; send -X copy-pipe-no-clear "xsel -i"
-# bind -n DoubleClick1Pane select-pane \; copy-mode -M \; send -X select-word \; send -X copy-pipe-no-clear "xsel -i"
-# bind -T copy-mode    TripleClick1Pane select-pane \; send -X select-line \; send -X copy-pipe-no-clear "xsel -i"
-# bind -T copy-mode-vi TripleClick1Pane select-pane \; send -X select-line \; send -X copy-pipe-no-clear "xsel -i"
-# bind -n TripleClick1Pane select-pane \; copy-mode -M \; send -X select-line \; send -X copy-pipe-no-clear "xsel -i"
-# bind -n MouseDown2Pane run "tmux set-buffer -b primary_selection \"$(xsel -o)\"; tmux paste-buffer -b primary_selection; tmux delete-buffer -b primary_selection"
+bind -T copy-mode    DoubleClick1Pane select-pane \; send -X select-word \; send -X copy-pipe-no-clear "xsel -i"
+bind -T copy-mode-vi DoubleClick1Pane select-pane \; send -X select-word \; send -X copy-pipe-no-clear "xsel -i"
+bind -n DoubleClick1Pane select-pane \; copy-mode -M \; send -X select-word \; send -X copy-pipe-no-clear "xsel -i"
+# TODO: instead select delimited be spaces?
+bind -T copy-mode    TripleClick1Pane select-pane \; send -X select-line \; send -X copy-pipe-no-clear "xsel -i"
+bind -T copy-mode-vi TripleClick1Pane select-pane \; send -X select-line \; send -X copy-pipe-no-clear "xsel -i"
+bind -n TripleClick1Pane select-pane \; copy-mode -M \; send -X select-line \; send -X copy-pipe-no-clear "xsel -i"
+bind -n MouseDown2Pane run "tmux set-buffer -b primary_selection \"$(xsel -o)\"; tmux paste-buffer -b primary_selection; tmux delete-buffer -b primary_selection"
 
 # === Appearance ===
 # xterm breaks home and end keys
-set -g default-terminal 'screen-256color'
-# fix 256 colors
-set-option -sa terminal-overrides ",screen*:Tc"
-# Customize the status line - obsolete with tmux-power
-# set -g status-fg  green
-# set -g status-bg  black
+# fix colors
+set -g default-terminal 'xterm-256color'
+set-option -sa terminal-overrides ",xterm*:Tc"
+# set-option -sa terminal-overrides ",screen*:Tc"
 
 # === Plugins ===
 # tmux-continuum
