@@ -1,13 +1,11 @@
 # === Settings ===
+# refresh enviroment variables
+set -g update-environment "SSH_ASKPASS SSH_AUTH_SOCK SSH_AGENT_PID SSH_CONNECTION WINDOWID XAUTHORITY DISPLAY TERM"
+new-window '~/.tmux/startup.sh' # export tmux env. var.s to shell
 # prevent gaps in window-numbering
 set-option -g renumber-windows on
 # Set scrollback buffer to 10000
 set -g history-limit 10000
-# refresh enviroment variables
-set-option -g update-environment "SSH_ASKPASS SSH_AUTH_SOCK SSH_AGENT_PID SSH_CONNECTION WINDOWID XAUTHORITY DISPLAY TERM"
-# run some custom commands at startup
-# - ensure env. is set up
-new-window '~/.tmux/startup.sh'
 
 # === Controls ===
 # enable mouse support
@@ -59,6 +57,10 @@ set-option -sa terminal-overrides ",alacritty*:Tc"
 # tmux-continuum
 set -g @continuum-restore 'on'
 set -g @continuum-boot 'on'
+# tmux-resurrect
+# TODO: tmp. disabled until XAUHTORITY is properly updated, else processes
+# requiring X get stuck while using a lot of CPU
+set -g @resurrect-processes 'false'
 # tmux-power
 set -g @tmux_power_show_web_reachable true
 # tmux Catppuccin theme
